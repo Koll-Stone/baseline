@@ -159,13 +159,13 @@ public final class baselineServer extends DefaultRecoverable {
 
         this.replica = new ServiceReplica(id, this, this);
 
-        try {
-            Thread.sleep(30000);
-            this.replica.kill();
-            logger.info("kill service replica after running for 30 seconds");
-        } catch (InterruptedException e) {
-            System.out.println("baseline server sleep failed!\n" + e);
-        }
+        // try {
+        //     Thread.sleep(30000);
+        //     this.replica.kill();
+        //     logger.info("kill service replica after running for 30 seconds");
+        // } catch (InterruptedException e) {
+        //     System.out.println("baseline server sleep failed!\n" + e);
+        // }
     }
 
     public byte[][] appExecuteBatch(byte[][] commands, MessageContext[] msgCtxs, boolean fromConsensus) {
@@ -378,8 +378,8 @@ public final class baselineServer extends DefaultRecoverable {
         }
 
         new baselineServer(processId, interval, replySize, context, s, w);
-        System.out.println("baseline server main thread stops");
-        System.exit(0);
+        // System.out.println("baseline server main thread stops");
+        // System.exit(0);
     }
 
     public void installSnapshot(byte[] state) {
