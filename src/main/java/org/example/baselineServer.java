@@ -40,7 +40,7 @@ public final class baselineServer extends DefaultRecoverable {
 
     private static Balana[] balana;
     private PDP[] pdpList;
-    private static int nWorkers = 4;
+    private static int nWorkers = 2;
     private static ExecutorService parallelVerifier = Executors.newWorkStealingPool(nWorkers);
 
     private int interval;
