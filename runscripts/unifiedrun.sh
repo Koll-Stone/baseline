@@ -36,6 +36,6 @@ if [ $flag -eq 1 ]
 then
     bash runscripts/myrun.sh org.example.baselineServer $me 10000 true
 else
-    bash runscripts/myrun.sh org.example.baselineClient 1 100 100 0 true
+    bash runscripts/myrun.sh org.example.baselineClient 1 10 100 0 true
 fi
 

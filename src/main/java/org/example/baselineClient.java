@@ -53,7 +53,7 @@ public class baselineClient {
 //        }
 
         if (args.length < 5) {
-            System.out.println("Usage: ... ThroughputLatencyClient <initial client id> <number of clients> <number of operations> <interval (ms)> <verbose?>");
+            System.out.println("Usage: ... baselineClient <initial client id> <number of clients> <number of operations> <interval (ms)> <verbose?>");
             System.exit(-1);
         }
 
