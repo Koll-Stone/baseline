@@ -352,6 +352,8 @@ public final class baselineServer extends DefaultRecoverable {
 //        String write = args.length > 6 ? args[6] : "";
         String write = "";
 
+        System.out.println("processId="+processId+", interval="+interval+", context="+context);
+
         int s = 0;
         if (!signed.equalsIgnoreCase("nosig")) {
             ++s;
