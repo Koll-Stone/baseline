@@ -1,7 +1,7 @@
 #!bin/bash
 echo "######unified running starts..."
 
-/home/ubuntu/xacmlProject/baseline
+cd /home/ubuntu/xacmlProject/baseline
 
 echo "######running code..."
 myip=$(hostname --ip-address)
