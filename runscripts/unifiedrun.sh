@@ -25,7 +25,7 @@ while read line; do
     then
         echo "yes me is $ind"
         flag=1
-        me=ind
+        ((me=ind))
     fi
     ((ind++))
 done < $input
