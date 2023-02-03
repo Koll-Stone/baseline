@@ -1,12 +1,12 @@
-org/example/baselineClient$Client.class
 org/example/Main.class
+org/example/baselineClient$Client.class
 org/example/baselineServer.class
 org/example/backupServer.class
 org/example/testDataBuilder.class
 org/example/backupServer$1.class
 org/example/evaluationPrepare.class
+org/example/baselineClient$1.class
 org/example/baselineServer$1.class
 org/example/checkDeterminism.class
-org/example/baselineClient$1.class
-org/example/baselineParameters.class
 org/example/baselineClient.class
+org/example/baselineParameters.class
