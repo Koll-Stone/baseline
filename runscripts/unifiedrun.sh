@@ -24,6 +24,7 @@ while read line; do
     then
         echo "yes me is $me"
         flag=1
+        break
     fi
     ((me++))
 done < $input
