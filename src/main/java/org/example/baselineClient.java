@@ -198,7 +198,7 @@ public class baselineClient {
                 byte[] reply = null;
                 byte[] request = getARequest(req);
                 reply = proxy.invokeOrdered(request);
-//                System.out.println("reply is " + new String(reply));
+                System.out.println("reply is " + new String(reply));
                 long latency = System.nanoTime() - last_send_instant;
 
                 try {

@@ -259,9 +259,9 @@ public class backupServer extends DefaultRecoverable {
         }
 
 
-        for (int i=0; i<commands.length; i++) {
-            replies[i] = "reply".getBytes();
-        }
+        // for (int i=0; i<commands.length; i++) {
+        //     replies[i] = "reply".getBytes();
+        // }
 
         return replies;
     }
