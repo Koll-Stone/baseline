@@ -1,0 +1,86 @@
+Launching client 1000
+Launching client 1001
+Launching client 1002
+Launching client 1003
+Launching client 1004
+Launching client 1005
+Launching client 1006
+Launching client 1007
+Launching client 1008
+Launching client 1009
+Launching client 1010
+Launching client 1011
+Launching client 1012
+Launching client 1013
+Launching client 1014
+Launching client 1015
+Launching client 1016
+Launching client 1017
+Launching client 1018
+Launching client 1019
+Warm up...
+Warm up...
+Warm up...
+Warm up...
+Warm up...
+Warm up...
+Warm up...
+Warm up...
+Warm up...
+Warm up...
+Warm up...
+Warm up...
+Warm up...
+Warm up...
+Warm up...
+Warm up...
+Warm up...
+Warm up...
+Warm up...
+Warm up...
+Executing experiment for 50 ops
+Executing experiment for 50 ops
+Executing experiment for 50 ops
+Executing experiment for 50 ops
+Executing experiment for 50 ops
+Executing experiment for 50 ops
+Executing experiment for 50 ops
+Executing experiment for 50 ops
+Executing experiment for 50 ops
+Executing experiment for 50 ops
+Executing experiment for 50 ops
+Executing experiment for 50 ops
+Executing experiment for 50 ops
+Executing experiment for 50 ops
+Executing experiment for 50 ops
+Executing experiment for 50 ops
+Executing experiment for 50 ops
+Executing experiment for 50 ops
+Executing experiment for 50 ops
+Executing experiment for 50 ops
+client 1011 is done
+client 1014 is done
+client 1006 is done
+client 1015 is done
+client 1017 is done
+client 1005 is done
+client 1018 is done
+client 1003 is done
+client 1013 is done
+client 1012 is done
+1000 // Average time for 50 executions (-10%) = 58610.658 us 
+1000 // Standard desviation for 50 executions (-10%) = 11383.218643226379 us 
+1000 // Average time for 50 executions (all samples) = 59927.25486 us 
+1000 // Standard desviation for 50 executions (all samples) = 18652.380991055976 us 
+1000 // Maximum time for 50 executions (all samples) = 128791 us 
+client 1000 is done
+client 1008 is done
+client 1009 is done
+client 1019 is done
+client 1007 is done
+client 1004 is done
+client 1001 is done
+client 1002 is done
+client 1010 is done
+client 1016 is done
+All clients done.
