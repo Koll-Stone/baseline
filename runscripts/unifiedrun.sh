@@ -17,16 +17,17 @@ myip=$(hostname --ip-address)
 echo "$myip"
 input="/home/ubuntu/xacmlProject/baseline/config/ips"
 
-me=0
+ind=0
+me=-1
 flag=-1
 while read line; do    
     if [[ $line == $myip ]]
     then
-        echo "yes me is $me"
+        echo "yes me is $ind"
         flag=1
-        break
+        me=ind
     fi
-    ((me++))
+    ((ind++))
 done < $input
 
 
