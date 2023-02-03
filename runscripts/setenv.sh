@@ -1,12 +1,7 @@
 echo "start..."
 
-cd /home/qiwei/xacmlProject/bftsmart/library
 
-./gradlew installDist
-
-cd /home/qiwei/xacmlProject/baseline
-
-cp /home/qiwei/xacmlProject/bftsmart/library/build/install/library/lib/BFT-SMaRt.jar lib
+cd /home/ubuntu/xacmlProject/baseline
 
 mvn install:install-file -Dfile=lib/BFT-SMaRt.jar -DgroupId=org.ulisboa -DartifactId=bftsmart -Dpackaging=jar -Dversion=1.0
 
