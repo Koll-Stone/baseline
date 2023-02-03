@@ -191,7 +191,7 @@ public class baselineClient {
             int req = 0;
 
             for (int i = 0; i < numberOfOps / 2; i++, req++) {
-                if (verbose) System.out.print("Sending req " + req + "...");
+//                if (verbose) System.out.print("Sending req " + req + "...");
 
                 long last_send_instant = System.nanoTime();
 
@@ -207,7 +207,7 @@ public class baselineClient {
                     ex.printStackTrace();
                 }
 
-                if (verbose) System.out.println(" sent!");
+//                if (verbose) System.out.println(" sent!");
 
                 if (verbose && (req % 100 == 0)) System.out.println(this.id + " // " + req + " operations sent!");
 

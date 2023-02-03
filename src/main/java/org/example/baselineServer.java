@@ -64,7 +64,7 @@ public final class baselineServer extends DefaultRecoverable {
     private FileChannel channel = null;
 
     public baselineServer(int id, int interval, int replySize, boolean context, int signed, int write) {
-
+        logger.info("w is {}", write);
         // initialize balana
         initProperty();
         updatablePolicyFinderModule[] upfmList = new updatablePolicyFinderModule[nWorkers];
@@ -79,10 +79,7 @@ public final class baselineServer extends DefaultRecoverable {
             balana[i].getPdpConfig().getPolicyFinder().setModules(set1);
             pdpList[i] = new PDP(new PDPConfig(null, balana[i].getPdpConfig().getPolicyFinder(), null, true));
         }
-        List<List<Document>> newpolicies = new ArrayList<List<Document>>();
-        for (int i=0; i<nWorkers; i++) {
-            newpolicies.add(new ArrayList<Document>());
-        }
+        List<Document> initialPolicies = new ArrayList<Document>();
         List<Integer> ResourceIds = new ArrayList<>();
 
         for (int i=0; i<RESOURCENUM; i++) {
@@ -91,24 +88,25 @@ public final class baselineServer extends DefaultRecoverable {
 
         // add policy
         int stateSize = 0;
+        int policyIndex = 0;
         Random rnd = new Random(0);
         for (int i=0; i<USERNUM; i++) {
-            for (int j=0; j<RESOURCENUM; j++) {
-                int policyid = i*USERNUM + j;
+            for (int j=0; j<POLICYEACHUSER; j++) {
+                policyIndex++;
                 Collections.shuffle(ResourceIds, rnd);
                 int a1 = ResourceIds.get(0) % RESOURCENUM;
                 int a2 = ResourceIds.get(1) % RESOURCENUM;
                 int a3 = ResourceIds.get(2) % RESOURCENUM;
-                String kmarketPolicy = createKMarketPolicy(""+policyid,"user"+i, "resource"+a1,
+                String kmarketPolicy = createKMarketPolicy("policy"+policyIndex,"user"+i, "resource"+a1,
                         "resource"+a2, "resource"+a3);
                 stateSize += kmarketPolicy.length();
                 for (int k=0; k<nWorkers; k++) {
-                    newpolicies.get(k).add(testDataBuilder.toDocument(kmarketPolicy));
+                    initialPolicies.add(testDataBuilder.toDocument(kmarketPolicy));
                 }
             }
         }
         for (int i=0; i<nWorkers; i++) {
-            upfmList[i].loadPolicyBatchFromMemory(newpolicies.get(i));
+            upfmList[i].loadPolicyBatchFromMemory(initialPolicies);
         }
         // initialize balana end
 
@@ -159,13 +157,13 @@ public final class baselineServer extends DefaultRecoverable {
 
         this.replica = new ServiceReplica(id, this, this);
 
-        // try {
-        //     Thread.sleep(30000);
-        //     this.replica.kill();
-        //     logger.info("kill service replica after running for 30 seconds");
-        // } catch (InterruptedException e) {
-        //     System.out.println("baseline server sleep failed!\n" + e);
-        // }
+        try {
+            Thread.sleep(300000);
+            this.replica.kill();
+            logger.info("kill service replica after running for 30 seconds");
+        } catch (InterruptedException e) {
+            System.out.println("baseline server sleep failed!\n" + e);
+        }
     }
 
     public byte[][] appExecuteBatch(byte[][] commands, MessageContext[] msgCtxs, boolean fromConsensus) {
@@ -378,8 +376,8 @@ public final class baselineServer extends DefaultRecoverable {
         }
 
         new baselineServer(processId, interval, replySize, context, s, w);
-        // System.out.println("baseline server main thread stops");
-        // System.exit(0);
+        System.out.println("baseline server main thread stops");
+        System.exit(0);
     }
 
     public void installSnapshot(byte[] state) {

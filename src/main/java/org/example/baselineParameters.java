@@ -2,8 +2,10 @@ package org.example;
 
 public class baselineParameters {
 
-    public static int USERNUM = 20;
+    public static int USERNUM = 600;
     public static int RESOURCENUM= 20;
+
+    public static int POLICYEACHUSER = 1;
 
     public static String createKMarketPolicy(String policyid, String subjectid, String resource1, String resource2, String resource3) {
 
