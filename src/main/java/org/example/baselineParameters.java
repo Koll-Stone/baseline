@@ -2,7 +2,7 @@ package org.example;
 
 public class baselineParameters {
 
-    public static int USERNUM = 800;
+    public static int USERNUM = 1000;
     public static int RESOURCENUM= 20;
 
     public static int POLICYEACHUSER = 1;
