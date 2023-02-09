@@ -47,13 +47,11 @@ public class baselineClient {
 
     @SuppressWarnings("static-access")
     public static void main(String[] args) throws IOException {
-//        if (args.length < 8) {
-//            System.out.println("Usage: ... ThroughputLatencyClient <initial client id> <number of clients> <number of operations> <request size> <interval (ms)> <read only?> <verbose?> <nosig | default | ecdsa>");
-//            System.exit(-1);
-//        }
 
-        if (args.length < 5) {
-            System.out.println("Usage: ... baselineClient <initial client id> <number of clients> <number of operations> <interval (ms)> <verbose?>");
+
+        if (args.length < 6) {
+            System.out.println("Usage: ... ThroughputLatencyClient <initial client id> <number of clients> <number of operations> " +
+                    "<interval (ms)> <verbose?> <signed>");
             System.exit(-1);
         }
 
@@ -87,24 +85,11 @@ public class baselineClient {
         int numThreads = Integer.parseInt(args[1]);
 
         int numberOfOps = Integer.parseInt(args[2]);
-//        int requestSize = Integer.parseInt(args[3]);
         int interval = Integer.parseInt(args[3]);
-//        boolean readOnly = Boolean.parseBoolean(args[5]);
         boolean verbose = Boolean.parseBoolean(args[4]);
-//        String sign = args[7];
-        String sign = "nosig";
-        int s = 0;
-        if (!sign.equalsIgnoreCase("nosig")) s++;
-        if (sign.equalsIgnoreCase("ecdsa")) s++;
-
-        if (s == 2 && Security.getProvider("SunEC") == null) {
-
-            System.out.println("Option 'ecdsa' requires SunEC provider to be available.");
-            System.exit(0);
-        }
+        boolean signed = Boolean.parseBoolean(args[5]);
 
         Client[] clients = new Client[numThreads];
-
         for(int i=0; i<numThreads; i++) {
             try {
                 Thread.sleep(10);
@@ -114,7 +99,7 @@ public class baselineClient {
             }
 
             System.out.println("Launching client " + (initId+i));
-            clients[i] = new Client(initId+i,numberOfOps, interval, verbose, s);
+            clients[i] = new Client(initId+i,numberOfOps, interval, verbose, signed);
         }
 
         ExecutorService exec = Executors.newFixedThreadPool(clients.length);
@@ -143,16 +128,18 @@ public class baselineClient {
     static class Client extends Thread {
 
         int id;
+        boolean signed;
         int numberOfOps;
         int interval;
         boolean verbose;
         ServiceProxy proxy;
         int rampup = 1000;
 
-        public Client(int id, int numberOfOps, int interval, boolean verbose, int sign) {
+        public Client(int id, int numberOfOps, int interval, boolean verbose, boolean sign) {
             super("Client "+id);
 
             this.id = id;
+            this.signed = sign;
             this.numberOfOps = numberOfOps;
 
             this.interval = interval;
@@ -164,7 +151,6 @@ public class baselineClient {
         public byte[] getARequest(int req) {
 
             Random ran = new Random(System.nanoTime() + this.id);
-//            byte[] signature = new byte[0];
             int userid = ran.nextInt(USERNUM);
             int resourceid = ran.nextInt(RESOURCENUM);
             int amount = ran.nextInt(10);
@@ -175,9 +161,24 @@ public class baselineClient {
 //            System.out.println("client " + this.id + " request " + req + " is " + kMarketRequest.hashCode() +"\nuserid=" + userid + ", resource=" + resourceid + ", amount=" + amount +
 //                    ", totalamount=" + totalamount);
             byte[] request = kMarketRequest.getBytes();
-            ByteBuffer buffer = ByteBuffer.allocate(request.length + (Integer.BYTES * 1));
+            byte[] signature = new byte[0];
+            if (this.signed) {
+                try {
+                    Signature ecdsaSign = TOMUtil.getSigEngine();
+                    ecdsaSign.initSign(proxy.getViewManager().getStaticConf().getPrivateKey());
+                    ecdsaSign.update(request);
+                    signature = ecdsaSign.sign();
+                } catch (Exception e) {
+                    System.out.println("wrong in signing messages... "+e);
+                }
+            }
+
+            ByteBuffer buffer = ByteBuffer.allocate(request.length + signature.length + (Integer.BYTES * 2));
+
             buffer.putInt(request.length);
             buffer.put(request);
+            buffer.putInt(signature.length);
+            buffer.put(signature);
             request = buffer.array();
             return request;
         }
@@ -198,7 +199,7 @@ public class baselineClient {
                 byte[] reply = null;
                 byte[] request = getARequest(req);
                 reply = proxy.invokeOrdered(request);
-                // System.out.println("reply is " + new String(reply));
+//                System.out.println("reply is " + new String(reply));
                 long latency = System.nanoTime() - last_send_instant;
 
                 try {

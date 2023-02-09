@@ -5,6 +5,7 @@ import bftsmart.tom.ServiceReplica;
 import bftsmart.tom.server.defaultservices.CommandsInfo;
 import bftsmart.tom.server.defaultservices.DefaultRecoverable;
 import bftsmart.tom.util.Storage;
+import bftsmart.tom.util.TOMUtil;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.wso2.balana.Balana;
@@ -21,12 +22,11 @@ import java.io.ObjectOutputStream;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
-import java.security.Security;
+import java.security.Signature;
 import java.util.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -47,7 +47,7 @@ public final class baselineServer extends DefaultRecoverable {
     private byte[] reply;
     private float maxTp = -1.0F;
     private boolean context;
-    private int signed;
+    private boolean signed;
     private byte[] state;
     private int iterations = 0;
     private long throughputMeasurementStartTime = System.currentTimeMillis();
@@ -63,7 +63,9 @@ public final class baselineServer extends DefaultRecoverable {
     private RandomAccessFile randomAccessFile = null;
     private FileChannel channel = null;
 
-    public baselineServer(int id, int interval, int replySize, boolean context, int signed, int write) {
+    public baselineServer(int id, int interval, int replySize, boolean context, boolean signed, int write) {
+
+
         logger.info("w is {}", write);
         // initialize balana
         initProperty();
@@ -170,6 +172,7 @@ public final class baselineServer extends DefaultRecoverable {
         logger.debug("execute batch with size = {} ", commands.length);
         this.batchSize.store((long)commands.length);
         byte[][] replies = new byte[commands.length][];
+        byte[][] signatures = new byte[commands.length][];
 
 
         byte[][] queries = new byte[commands.length][];
@@ -179,6 +182,9 @@ public final class baselineServer extends DefaultRecoverable {
             byte[] request = new byte[l];
             buffer.get(request);
             queries[i] = request;
+            l = buffer.getInt();
+            signatures[i] = new byte[l];
+            buffer.get(signatures[i]);
         }
 
         for(int i = 0; i < commands.length; ++i) {
@@ -186,15 +192,7 @@ public final class baselineServer extends DefaultRecoverable {
         }
 
 
-//        // single thread evaluation
-//        for (int i=0; i<commands.length; i++) {
-//            String result = pdpList[0].evaluate(new String(queries[i]));
-//            replies[i] = result.getBytes();
-//            logger.info(result);
-//        }
-
         // multi-thread evaluation
-//        ReentrantLock replyLock = new ReentrantLock();
         CountDownLatch latch = new CountDownLatch(commands.length);
         for (int i=0; i<commands.length; i++) {
             final int cind = i;
@@ -202,10 +200,27 @@ public final class baselineServer extends DefaultRecoverable {
                 try {
                     int tind = (int) Thread.currentThread().getId() % nWorkers;
                     String result = pdpList[tind].evaluate(new String(queries[cind]));
-//                    replyLock.lock();
                     replies[cind] = result.getBytes();
-//                    replyLock.unlock();
 //                    logger.info("thread {} finishes its work", tind);
+
+                    if (this.signed) {
+                        try {
+                            Signature ecdsaVerify = TOMUtil.getSigEngine();
+                            ecdsaVerify.initVerify(replica.getReplicaContext().getStaticConfiguration().getPublicKey());
+                            ecdsaVerify.update(queries[cind]);
+                            if (!ecdsaVerify.verify(signatures[cind])) {
+                                System.out.println("Client sent invalid signature!");
+                                System.exit(0);
+                            } else {
+                                System.out.println("thread " + tind + " finished validating 1 request sig which is valid");
+                            }
+                        } catch (Exception e) {
+                            System.out.println("error in validating query " + e);
+                        }
+                    }
+
+
+
                     latch.countDown();
                 } catch (Exception e) {
                     logger.info("error in multi-thread evaluation\n" + e);
@@ -335,38 +350,14 @@ public final class baselineServer extends DefaultRecoverable {
     }
 
     public static void main(String[] args) {
-//        if (args.length < 6) {
-//            System.out.println("Usage: ... ThroughputLatencyServer <processId> <measurement interval> <reply size> <state size> <context?> <nosig | default | ecdsa> [rwd | rw]");
-//            System.exit(-1);
-//        }
-
+        // <processid> <measurement interval> <replysize> <showcontext?> <signed?>
         int processId = Integer.parseInt(args[0]);
         int interval = Integer.parseInt(args[1]);
-//        int replySize = Integer.parseInt(args[2]);
         int replySize = 200;
-//        int stateSize = Integer.parseInt(args[3]);
-//        int stateSize = 10000;
         boolean context = Boolean.parseBoolean(args[2]);
-//        String signed = args[5];
-        String signed = "nosig";
-//        String write = args.length > 6 ? args[6] : "";
+        boolean signed = Boolean.parseBoolean(args[3]);
         String write = "";
 
-        System.out.println("processId="+processId+", interval="+interval+", context="+context);
-
-        int s = 0;
-        if (!signed.equalsIgnoreCase("nosig")) {
-            ++s;
-        }
-
-        if (signed.equalsIgnoreCase("ecdsa")) {
-            ++s;
-        }
-
-        if (s == 2 && Security.getProvider("SunEC") == null) {
-            System.out.println("Option 'ecdsa' requires SunEC provider to be available.");
-            System.exit(0);
-        }
 
         int w = 0;
         if (!write.equalsIgnoreCase("")) {
@@ -377,7 +368,7 @@ public final class baselineServer extends DefaultRecoverable {
             ++w;
         }
 
-        new baselineServer(processId, interval, replySize, context, s, w);
+        new baselineServer(processId, interval, replySize, context, signed, w);
         System.out.println("baseline server main thread stops");
         System.exit(0);
     }

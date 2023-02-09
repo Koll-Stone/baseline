@@ -1,9 +1,12 @@
 echo "######start..."
 
 echo "######downloading library..."
-cd /home/ubuntu/xacmlProject
-rm -rf baseline
-git clone https://github.com/Koll-Stone/baseline.git
+cd /home/ubuntu/xacmlProject/storage
+git pull
+cp original/BFT-SMaRt.jar /home/ubuntu/xacmlProject/baseline/lib/
+
+# rm -rf baseline
+# git clone https://github.com/Koll-Stone/baseline.git
 
 echo "######setting environment..."
 cd /home/ubuntu/xacmlProject/baseline
