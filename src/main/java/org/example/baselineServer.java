@@ -212,7 +212,7 @@ public final class baselineServer extends DefaultRecoverable {
                                 System.out.println("Client sent invalid signature!");
                                 System.exit(0);
                             } else {
-                                System.out.println("thread " + tind + " finished validating 1 request sig which is valid");
+                                // System.out.println("thread " + tind + " finished validating 1 request sig which is valid");
                             }
                         } catch (Exception e) {
                             System.out.println("error in validating query " + e);
