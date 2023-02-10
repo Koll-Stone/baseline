@@ -28,7 +28,7 @@ then
     echo "bash runscripts/myrun.sh org.example.baselineServer $me 25000 true true"
     bash runscripts/myrun.sh org.example.baselineServer $me 20000 true true
 else
-    echo "bash runscripts/myrun.sh org.example.baselineClient 1 10 100 0 true"
-    bash runscripts/myrun.sh org.example.baselineClient 1 10 100 0 true
+    echo "bash runscripts/myrun.sh org.example.baselineClient 1 10 100 0 true true"
+    bash runscripts/myrun.sh org.example.baselineClient 1 10 100 0 true true
 fi
 
