@@ -33,7 +33,7 @@ then
         client=$(($me-4))
         start=$(($(($client*600))+1001))
         echo "bash runscripts/myrun.sh org.example.baselineClient $start 10 100 0 true true"
-        bash runscripts/myrun.sh org.example.baselineClient $start 10 100 0 true true
+        bash runscripts/myrun.sh org.example.baselineClient $start 100 10 0 true true
     fi   
 fi
 
