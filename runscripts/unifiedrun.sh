@@ -28,12 +28,12 @@ then
     if [ $me -le 3 ]
     then
         echo "bash runscripts/myrun.sh org.example.baselineServer $me 10000 true true"
-        bash runscripts/myrun.sh org.example.baselineServer $me 10000 true true
+        bash runscripts/myrun.sh org.example.baselineServer $me 10000 true false
     else
         client=$(($me-4))
         start=$(($(($client*600))+1001))
         echo "bash runscripts/myrun.sh org.example.baselineClient $start 400 100 10 true true"
-        bash runscripts/myrun.sh org.example.baselineClient $start 3 10001 10 true true
+        bash runscripts/myrun.sh org.example.baselineClient $start 3 10001 10 true false
     fi   
 fi
 
