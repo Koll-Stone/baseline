@@ -326,7 +326,7 @@ public final class baselineServer extends DefaultRecoverable {
                 this.maxTp = tp;
             }
             tpsdata.add((int) tp);
-            if (tpsdata.size()>10)
+            if (tpsdata.size()>4)
                 System.out.println(Arrays.toString(tpsdata.toArray()));
 
             System.out.println("Throughput = " + tp + " operations/sec (Maximum observed: " + this.maxTp + " ops/sec)");
