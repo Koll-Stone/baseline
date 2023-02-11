@@ -325,7 +325,7 @@ public final class baselineServer extends DefaultRecoverable {
             if (tp > this.maxTp) {
                 this.maxTp = tp;
             }
-            tpsdata.add(tp);
+            tpsdata.add((int) tp);
             if (tpsdata.size()>10)
                 System.out.println(Arrays.toString(tpsdata.toArray()));
 
