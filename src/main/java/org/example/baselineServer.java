@@ -34,7 +34,7 @@ import static org.example.baselineParameters.*;
 
 public final class baselineServer extends DefaultRecoverable {
 
-
+    private List<Integer> tpsdata = new ArrayList<>();
     private final org.slf4j.Logger logger = LoggerFactory.getLogger(this.getClass());
 
 
@@ -325,6 +325,9 @@ public final class baselineServer extends DefaultRecoverable {
             if (tp > this.maxTp) {
                 this.maxTp = tp;
             }
+            tpsdata.add(tp);
+            if (tpsdata.size()>10)
+                System.out.println(Arrays.toString(tpsdata.toArray()));
 
             System.out.println("Throughput = " + tp + " operations/sec (Maximum observed: " + this.maxTp + " ops/sec)");
             System.out.println("Total latency = " + this.totalLatency.getAverage(false) / 1000.0 + " (+/- " + (long)this.totalLatency.getDP(false) / 1000L + ") us ");
@@ -344,6 +347,8 @@ public final class baselineServer extends DefaultRecoverable {
             System.out.println("Batch average size = " + this.batchSize.getAverage(false) + " (+/- " + (long)this.batchSize.getDP(false) + ") requests");
             this.batchSize.reset();
             this.throughputMeasurementStartTime = System.currentTimeMillis();
+
+
         }
 
         return "reply".getBytes();
