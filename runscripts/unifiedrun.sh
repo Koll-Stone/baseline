@@ -35,7 +35,7 @@ then
         start=$(($(($client*1000))+1001))
         command="runscripts/myrun.sh org.example.baselineClient $start 300 201 10 true true"
         echo $command
-        # bash $command
+        bash $command
     fi   
 fi
 
