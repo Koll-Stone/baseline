@@ -38,6 +38,12 @@ public class baselineClient {
         }
 
         initId = Integer.parseInt(args[0]);
+        int numThreads = Integer.parseInt(args[1]);
+        int numberOfOps = Integer.parseInt(args[2]);
+        int interval = Integer.parseInt(args[3]);
+        boolean verbose = Boolean.parseBoolean(args[4]);
+        boolean signed = Boolean.parseBoolean(args[5]);
+
         latencies = new LinkedBlockingQueue<>();
         writerThread = new Thread() {
 
@@ -64,12 +70,7 @@ public class baselineClient {
         };
         writerThread.start();
 
-        int numThreads = Integer.parseInt(args[1]);
-
-        int numberOfOps = Integer.parseInt(args[2]);
-        int interval = Integer.parseInt(args[3]);
-        boolean verbose = Boolean.parseBoolean(args[4]);
-        boolean signed = Boolean.parseBoolean(args[5]);
+        
 
         Client[] clients = new Client[numThreads];
         for(int i=0; i<numThreads; i++) {

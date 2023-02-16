@@ -32,8 +32,8 @@ then
         # bash $command
     else
         client=$(($me-4))
-        start=$(($(($client*600))+1001))
-        command="bash runscripts/myrun.sh org.example.baselineClient $start 400 100 10 true true"
+        start=$(($(($client*1000))+1001))
+        command="bash runscripts/myrun.sh org.example.baselineClient $start 100 601 10 true true"
         echo $command
         # bash $command
     fi   
