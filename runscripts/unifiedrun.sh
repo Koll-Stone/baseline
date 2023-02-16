@@ -21,21 +21,21 @@ while read line; do
     ((ind++))
 done < $input
 
-
+servernum=7
 
 if [ $flag -eq 1 ]
 then
-    if [ $me -le 3 ]
+    if [ $me -le $(($servernum-1)) ]
     then
         command="runscripts/myrun.sh org.example.baselineServer $me 10000 true true"
         echo $command
-        bash $command
+        # bash $command
     else
-        client=$(($me-4))
+        client=$(($me-$servernum))
         start=$(($(($client*1000))+1001))
         command="runscripts/myrun.sh org.example.baselineClient $start 300 201 10 true true"
         echo $command
-        bash $command
+        # bash $command
     fi   
 fi
 
