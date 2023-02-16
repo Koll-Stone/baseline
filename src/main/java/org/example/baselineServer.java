@@ -70,7 +70,7 @@ public final class baselineServer extends DefaultRecoverable {
     private long total60ktime;
     private boolean total160kupdateflag;
 
-    public baselineServer(int id, int interval, int replySize, boolean context, boolean signed, int write) {
+    public baselineServer(int id, int interval, boolean context, boolean signed, int write) {
 
 
         total40ktime = System.currentTimeMillis();
@@ -134,15 +134,11 @@ public final class baselineServer extends DefaultRecoverable {
         this.interval = interval;
         this.context = context;
         this.signed = signed;
-        this.reply = new byte[replySize];
 
-        int i;
-        for(i = 0; i < replySize; ++i) {
-            this.reply[i] = (byte)i;
-        }
         logger.info("state size is " + stateSize);
         this.state = new byte[stateSize];
-
+        
+        int i;
         for(i = 0; i < stateSize; ++i) {
             this.state[i] = (byte)i;
         }
@@ -383,10 +379,9 @@ public final class baselineServer extends DefaultRecoverable {
     }
 
     public static void main(String[] args) {
-        // <processid> <measurement interval> <replysize> <showcontext?> <signed?>
+        // <processid> <measurement interval> <showcontext?> <signed?>
         int processId = Integer.parseInt(args[0]);
         int interval = Integer.parseInt(args[1]);
-        int replySize = 200;
         boolean context = Boolean.parseBoolean(args[2]);
         boolean signed = Boolean.parseBoolean(args[3]);
         String write = "";
@@ -401,7 +396,7 @@ public final class baselineServer extends DefaultRecoverable {
             ++w;
         }
 
-        new baselineServer(processId, interval, replySize, context, signed, w);
+        new baselineServer(processId, interval, context, signed, w);
         System.out.println("baseline server main thread stops");
         System.exit(0);
     }
