@@ -397,8 +397,8 @@ public final class baselineServer extends DefaultRecoverable {
         }
 
         new baselineServer(processId, interval, context, signed, w);
-        System.out.println("baseline server main thread stops");
-        System.exit(0);
+        // System.out.println("baseline server main thread stops");
+        // System.exit(0);
     }
 
     public void installSnapshot(byte[] state) {
