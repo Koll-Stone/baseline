@@ -116,7 +116,7 @@ public class baselineClient {
         double averagelatency = computeAverage(finaldata, true);
 
 
-        System.out.println("All clients done. average latency is "+averagelatency + " ms");
+        System.out.println("All clients done. average latency is "+averagelatency/1000000 + " ms");
 
 
         exec.shutdown();
