@@ -42,6 +42,7 @@ public final class baselineServer extends DefaultRecoverable {
     private PDP[] pdpList;
     private static int nWorkers = 2;
     private static ExecutorService parallelVerifier = Executors.newWorkStealingPool(nWorkers);
+    private List<String> allPolicies;
 
     private int interval;
     private byte[] reply;
@@ -63,13 +64,26 @@ public final class baselineServer extends DefaultRecoverable {
     private RandomAccessFile randomAccessFile = null;
     private FileChannel channel = null;
 
+
+    private long total40ktime;
+    private boolean total100kupdateflag;
+    private long total60ktime;
+    private boolean total160kupdateflag;
+
     public baselineServer(int id, int interval, int replySize, boolean context, boolean signed, int write) {
+
+
+        total40ktime = System.currentTimeMillis();
+        total100kupdateflag = false;
+        total60ktime = System.currentTimeMillis();
+        total160kupdateflag = false;
 
 
         logger.info("w is {}", write);
         // initialize balana
         initProperty();
         updatablePolicyFinderModule[] upfmList = new updatablePolicyFinderModule[nWorkers];
+        allPolicies = new ArrayList<String>();
 
         balana = new Balana[nWorkers];
         pdpList = new PDP[nWorkers];
@@ -105,6 +119,7 @@ public final class baselineServer extends DefaultRecoverable {
                 for (int k=0; k<nWorkers; k++) {
                     initialPolicies.add(testDataBuilder.toDocument(kmarketPolicy));
                 }
+                allPolicies.add(kmarketPolicy);
             }
         }
         for (int i=0; i<nWorkers; i++) {
@@ -159,13 +174,13 @@ public final class baselineServer extends DefaultRecoverable {
 
         this.replica = new ServiceReplica(id, this, this);
 
-        try {
-            Thread.sleep(300000);
-            this.replica.kill();
-            logger.info("kill service replica after running for 30 seconds");
-        } catch (InterruptedException e) {
-            System.out.println("baseline server sleep failed!\n" + e);
-        }
+        // try {
+        //     Thread.sleep(300000);
+        //     this.replica.kill();
+        //     logger.info("kill service replica after running for 30 seconds");
+        // } catch (InterruptedException e) {
+        //     System.out.println("baseline server sleep failed!\n" + e);
+        // }
     }
 
     public byte[][] appExecuteBatch(byte[][] commands, MessageContext[] msgCtxs, boolean fromConsensus) {
@@ -285,6 +300,19 @@ public final class baselineServer extends DefaultRecoverable {
 
         boolean readOnly = false;
         ++this.iterations;
+
+        if (iterations>100000 && !total100kupdateflag)
+        {
+            total40ktime = System.currentTimeMillis();
+            total100kupdateflag = true;
+        }
+        if (iterations>160000 && !total160kupdateflag) {
+            total60ktime = System.currentTimeMillis();
+            logger.info("************************\ntps at stable phase is {} \n***********************",
+                    (60000.0*1000.0/(total60ktime-total40ktime)));
+            total160kupdateflag = true;
+        }
+
         if (msgCtx != null && msgCtx.getFirstInBatch() != null) {
             readOnly = msgCtx.readOnly;
             msgCtx.getFirstInBatch().executedTime = System.nanoTime();

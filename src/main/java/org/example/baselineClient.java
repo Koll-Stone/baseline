@@ -8,12 +8,11 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.security.*;
-import java.security.spec.EncodedKeySpec;
-import java.security.spec.InvalidKeySpecException;
-import java.security.spec.PKCS8EncodedKeySpec;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.Random;
+import java.util.*;
+// import java.util.Collection;
+// import java.util.List;
+// import java.util.LinkedList;
+// import java.util.Random;
 import java.util.concurrent.*;
 
 import static org.example.baselineParameters.*;
@@ -23,23 +22,6 @@ public class baselineClient {
     public static int initId = 0;
     static LinkedBlockingQueue<String> latencies;
     static Thread writerThread;
-
-    /*public static String privKey =  "MIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQgXa3mln4anewXtqrM" +
-                                    "hMw6mfZhslkRa/j9P790ToKjlsihRANCAARnxLhXvU4EmnIwhVl3Bh0VcByQi2um" +
-                                    "9KsJ/QdCDjRZb1dKg447voj5SZ8SSZOUglc/v8DJFFJFTfygjwi+27gz";
-
-    public static String pubKey =   "MIICNjCCAd2gAwIBAgIRAMnf9/dmV9RvCCVw9pZQUfUwCgYIKoZIzj0EAwIwgYEx" +
-                                    "CzAJBgNVBAYTAlVTMRMwEQYDVQQIEwpDYWxpZm9ybmlhMRYwFAYDVQQHEw1TYW4g" +
-                                    "RnJhbmNpc2NvMRkwFwYDVQQKExBvcmcxLmV4YW1wbGUuY29tMQwwCgYDVQQLEwND" +
-                                    "T1AxHDAaBgNVBAMTE2NhLm9yZzEuZXhhbXBsZS5jb20wHhcNMTcxMTEyMTM0MTEx" +
-                                    "WhcNMjcxMTEwMTM0MTExWjBpMQswCQYDVQQGEwJVUzETMBEGA1UECBMKQ2FsaWZv" +
-                                    "cm5pYTEWMBQGA1UEBxMNU2FuIEZyYW5jaXNjbzEMMAoGA1UECxMDQ09QMR8wHQYD" +
-                                    "VQQDExZwZWVyMC5vcmcxLmV4YW1wbGUuY29tMFkwEwYHKoZIzj0CAQYIKoZIzj0D" +
-                                    "AQcDQgAEZ8S4V71OBJpyMIVZdwYdFXAckItrpvSrCf0HQg40WW9XSoOOO76I+Umf" +
-                                    "EkmTlIJXP7/AyRRSRU38oI8Ivtu4M6NNMEswDgYDVR0PAQH/BAQDAgeAMAwGA1Ud" +
-                                    "EwEB/wQCMAAwKwYDVR0jBCQwIoAginORIhnPEFZUhXm6eWBkm7K7Zc8R4/z7LW4H" +
-                                    "ossDlCswCgYIKoZIzj0EAwIDRwAwRAIgVikIUZzgfuFsGLQHWJUVJCU7pDaETkaz" +
-                                    "PzFgsCiLxUACICgzJYlW7nvZxP7b6tbeu3t8mrhMXQs956mD4+BoKuNI";*/
 
     public static String privKey = "MD4CAQAwEAYHKoZIzj0CAQYFK4EEAAoEJzAlAgEBBCBnhIob4JXH+WpaNiL72BlbtUMAIBQoM852d+tKFBb7fg==";
     public static String pubKey = "MFYwEAYHKoZIzj0CAQYFK4EEAAoDQgAEavNEKGRcmB7u49alxowlwCi1s24ANOpOQ9UiFBxgqnO/RfOl3BJm0qE2IJgCnvL7XUetwj5C/8MnMWi9ux2aeQ==";
@@ -120,14 +102,47 @@ public class baselineClient {
 
         }
 
+
+        List<Long> latencyres = new ArrayList<Long>();
+        for (int i=0; i<numThreads; i++) {
+            for (long x: clients[i].getLatencydata().getValues())
+                latencyres.add(x);
+        }
+        long[] finaldata = new long[latencyres.size()];
+        for(int i=0; i<latencyres.size(); i++) {
+            finaldata[i] = latencyres.get(i);
+        }
+        double averagelatency = computeAverage(finaldata, true);
+
+
+        System.out.println("All clients done. average latency is "+averagelatency + " ms");
+
+
         exec.shutdown();
 
         System.out.println("All clients done.");
     }
 
+    private static double computeAverage(long[] values, boolean percent) {
+        Arrays.sort(values);
+        int limit = 0;
+        if (percent) {
+            limit = values.length / 10;
+        }
+
+        long count = 0L;
+
+        for(int i = limit; i < values.length - limit; ++i) {
+            count += values[i];
+        }
+
+        return (double)count / (double)(values.length - 2 * limit);
+    }
+
     static class Client extends Thread {
 
         int id;
+        Storage st;
         boolean signed;
         int numberOfOps;
         int interval;
@@ -168,6 +183,7 @@ public class baselineClient {
                     ecdsaSign.initSign(proxy.getViewManager().getStaticConf().getPrivateKey());
                     ecdsaSign.update(request);
                     signature = ecdsaSign.sign();
+
                 } catch (Exception e) {
                     System.out.println("wrong in signing messages... "+e);
                 }
@@ -229,7 +245,7 @@ public class baselineClient {
                 }
             }
 
-            Storage st = new Storage(numberOfOps / 2);
+            st = new Storage(numberOfOps / 2);
 
             System.out.println("Executing experiment for " + numberOfOps / 2 + " ops");
 
@@ -280,6 +296,10 @@ public class baselineClient {
             }
             System.out.println("client " + this.id + " is done");
             proxy.close();
+        }
+
+        public Storage getLatencydata() {
+            return st;
         }
     }
 }
