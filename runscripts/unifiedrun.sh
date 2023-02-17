@@ -27,13 +27,13 @@ if [ $flag -eq 1 ]
 then
     if [ $me -le $(($servernum-1)) ]
     then
-        command="runscripts/myrun.sh org.example.baselineServer $me 10000 true true"
+        command="runscripts/myrun.sh org.example.baselineServer $me 10000 true false"
         echo $command
         bash $command
     else
         client=$(($me-$servernum))
         start=$(($(($client*1000))+1001))
-        command="runscripts/myrun.sh org.example.baselineClient $start 64 2800 0 true true"
+        command="runscripts/myrun.sh org.example.baselineClient $start 64 2800 0 true false"
         echo $command
         bash $command
     fi   
