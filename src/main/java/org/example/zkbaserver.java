@@ -15,7 +15,6 @@ import java.nio.file.Paths;
 import java.security.Signature;
 import java.util.*;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -53,16 +52,25 @@ public class zkbaserver extends DefaultRecoverable {
 
     long total40ktime;
     boolean total100kupdateflag;
-    long total60ktime;
+    long total160ktime;
     boolean total160kupdateflag;
+    int txcreatenum;
+    int txdestroynum;
+    int txdelenum;
+    int txusenum;
 
     public zkbaserver(int id) {
 
 
         total40ktime = System.currentTimeMillis();
         total100kupdateflag = false;
-        total60ktime = System.currentTimeMillis();
+        total160ktime = System.currentTimeMillis();
         total160kupdateflag = false;
+        txcreatenum = 0;
+        txdestroynum = 0;
+        txdelenum = 0;
+        txusenum = 0;
+
         interval = 10000;
         this.totalLatency = new Storage(interval);
         this.consensusLatency = new Storage(interval);
@@ -171,15 +179,48 @@ public class zkbaserver extends DefaultRecoverable {
         boolean readOnly = false;
         ++this.iterations;
 
-        if (iterations>100000 && !total100kupdateflag)
+
+        ByteBuffer buffer = ByteBuffer.wrap(request);
+        int l=buffer.getInt();
+        switch (l) {
+            case 0:
+            {
+                txcreatenum++;
+                break;
+            }
+            case 1:
+            {
+                txdestroynum++;
+                break;
+            }
+            case 2:
+            {
+                txdelenum++;
+                break;
+            }
+            case 3:
+            {
+                txusenum++;
+                break;
+            }
+        }
+
+        if (iterations>60000 && !total100kupdateflag)
         {
             total40ktime = System.currentTimeMillis();
             total100kupdateflag = true;
+            txcreatenum = 0;
+            txdestroynum = 0;
+            txdelenum = 0;
+            txusenum = 0;
         }
         if (iterations>160000 && !total160kupdateflag) {
-            total60ktime = System.currentTimeMillis();
-            System.out.println("************************\ntps at stable phase is {} \n***********************"+
-                    (60000.0*1000.0/(total60ktime-total40ktime)));
+            total160ktime = System.currentTimeMillis();
+            long elapsed = (total160ktime -total40ktime);
+            System.out.println("************************\ntps at stable phase is "+(60000.0*1000.0/elapsed)+ "\n***********************");
+            System.out.println("four tx processed: create/destroy/delegate/use = "+txcreatenum+"/"+txdestroynum+"/"+txdelenum+"/"+txusenum);
+            System.out.println("four tx tps: create/destroy/delegate/use = "+txcreatenum*1000.0/elapsed+"/"+txdestroynum*1000.0/elapsed+
+                    "/"+txdelenum*1000.0/elapsed+"/"+txusenum*1000.0/elapsed);
             total160kupdateflag = true;
         }
 

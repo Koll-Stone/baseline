@@ -305,6 +305,37 @@ public class zkbaclient {
         }
 
         public void run() {
+            int operationundertest = 0;
+            int sigratio = 10; // 25%
+            int zkpratio = 40; //25% make sure sigratio+zkpratio==50
+            List<Integer> commandwillbeused = new ArrayList<Integer>();
+            for (int i=0; i<sigratio; i++)
+                commandwillbeused.add(0);
+            for (int i=sigratio; i<sigratio*2; i++)
+                commandwillbeused.add(1);
+            for (int i=sigratio*2; i<sigratio*2+zkpratio; i++)
+                commandwillbeused.add(2);
+            for (int i=sigratio*2+zkpratio; i<sigratio*2+zkpratio*2; i++)
+                commandwillbeused.add(3);
+//            System.out.println("command will be used length: "+commandwillbeused.size());
+//
+//            for (int i=0; i<100; i++) {
+//                if (i<sigratio) {
+//                    commandwillbeused.add(0);
+//                } else if (i>=sigratio && i<sigratio*2) {
+//                    commandwillbeused.add(1);
+//                } else if (i>=sigratio*2 && i<sigratio*2+zkpratio) {
+//                    commandwillbeused.add(2);
+//                } else {
+//                    commandwillbeused.add(3);
+//                }
+//            }
+            Collections.shuffle(commandwillbeused);
+            int[] allcommands = new int[numberOfOps];
+            for (int i=0; i<numberOfOps; i++) {
+                allcommands[i] = commandwillbeused.get((i%100));
+            }
+
 
             int timeoutvalue = proxy.getInvokeTimeout();
             if (id==1) {
@@ -328,7 +359,7 @@ public class zkbaclient {
                 long last_send_instant = System.nanoTime();
 
                 byte[] reply = null;
-                byte[] request = getARequest(this.command);
+                byte[] request = getARequest(allcommands[req]);
 
                 cansend.lock();
                 reply = proxy.invokeOrdered(request);
@@ -357,7 +388,7 @@ public class zkbaclient {
                     if (verbose) System.out.print(this.id + " // Sending req " + req + "...");
 
                 byte[] reply = null;
-                byte[] request = getARequest(this.command);
+                byte[] request = getARequest(allcommands[req]);
 
                 cansend.lock();
                 reply = proxy.invokeOrdered(request);
@@ -372,7 +403,9 @@ public class zkbaclient {
                 }
                 if (req%100==0)
                     if (verbose) System.out.println(this.id + " // sent!");
-                latencydata.store(latency);
+
+                if (allcommands[req]==operationundertest)
+                    latencydata.store(latency);
 
                 try {
                     //sleeps interval ms before sending next request
