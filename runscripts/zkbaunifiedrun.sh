@@ -21,7 +21,7 @@ while read line; do
     ((ind++))
 done < $input
 
-servernum=4
+servernum=10
 
 if [ $flag -eq 1 ]
 then
@@ -29,13 +29,13 @@ then
     then
         command="runscripts/myrun.sh org.example.zkbaserver $me"
         echo $command
-        bash $command
+        # bash $command
     else
         client=$(($me-$servernum))
         start=$(($(($client*1000))+1001))
         command="runscripts/myrun.sh org.example.zkbaclient $start 50 501 0 true 1"
         echo $command
-        bash $command
+        # bash $command
     fi   
 fi
 
