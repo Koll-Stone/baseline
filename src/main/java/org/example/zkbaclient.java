@@ -305,7 +305,7 @@ public class zkbaclient {
         }
 
         public void run() {
-            int operationundertest = 0;
+            int operationundertest = 2;
             int sigratio = 20; // 25%
             int zkpratio = 30; //25% make sure sigratio+zkpratio==50
             List<Integer> commandwillbeused = new ArrayList<Integer>();
