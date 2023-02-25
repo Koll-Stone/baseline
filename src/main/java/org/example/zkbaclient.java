@@ -435,7 +435,8 @@ public class zkbaclient {
                 System.out.println(this.id + " // Maximum time for " + numberOfOps / 2 + " executions (all samples) = " + latencydata.getMax(false) / 1000 + " us ");
             }
             System.out.println("client " + this.id + " is done");
-            proxy.close();
+            if (id!=1 && id!=2)
+                proxy.close();
         }
 
         public Storage getLatencydata() {
