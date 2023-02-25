@@ -76,7 +76,7 @@ public class sslclient extends Thread{
 
         List<Long> latencyres = new ArrayList<Long>();
         int ind=1;
-        for (; ind<30; ind++) {
+        for (; ind<100; ind++) {
 
             try {
                 Thread.sleep(300);
@@ -89,7 +89,7 @@ public class sslclient extends Thread{
                 cost = simulateTransfer(ind);
             else if (functiontested.equals("use"))
                 cost = simulateUse(ind);
-            logger.info("time cost of {}th end-to-end {} is {} us\n", this.functiontested, ind, cost);
+            logger.info("time cost of {}th end-to-end {} is {} ms\n", this.functiontested, ind, cost);
             latencyres.add((long) cost);
         }
 
@@ -147,7 +147,7 @@ public class sslclient extends Thread{
 //    }
 
     private int simulateTransfer(int ind) {
-        long start = System.nanoTime();
+        long start = System.currentTimeMillis();
         // send zerotoken requester and randomness
         sendBytes(getRandomValues(ind));
 
@@ -165,17 +165,17 @@ public class sslclient extends Thread{
                 break;
             }
         }
-        if (System.nanoTime()<start) {
-            logger.info("error!");
-            System.exit(0);
-        }
+        // if (System.nanoTime()<start) {
+        //     logger.info("error!");
+        //     System.exit(0);
+        // }
 
-        long duration = System.nanoTime() - start;
-        return ((int) duration/1000);
+        long duration = System.currentTimeMillis()-start;
+        return (int) duration;
     }
 
     private int simulateUse(int ind) {
-        long start = System.nanoTime();
+        long start = System.currentTimeMillis();
 
         // invoke blockchain ordered
         if (zkbablockchainclient!=null) {
@@ -204,8 +204,8 @@ public class sslclient extends Thread{
             }
         }
 
-        long duration = System.nanoTime() - start;
-        return ((int) duration/1000);
+        long duration = System.currentTimeMillis() - start;
+        return (int) duration;
     }
 
     private void closeSocket() {
