@@ -339,12 +339,14 @@ public class zkbaclient {
 
             int timeoutvalue = proxy.getInvokeTimeout();
             if (id==1) {
+                numberOfOps = 0;
                 new Thread(() -> {
                     new sslserver(this);
                 }).start();
             }
 
             if (id==2) {
+                numberOfOps = 0;
                 new Thread(() -> {
                     new sslclient(this);
                 }).start();
