@@ -21,7 +21,7 @@ while read line; do
     ((ind++))
 done < $input
 
-servernum=4
+servernum=10
 
 if [ $flag -eq 1 ]
 then
