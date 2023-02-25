@@ -89,7 +89,7 @@ public class sslclient extends Thread{
                 cost = simulateTransfer(ind);
             else if (functiontested.equals("use"))
                 cost = simulateUse(ind);
-            logger.info("time cost of {}th end-to-end {} is {} ms\n", this.functiontested, ind, cost);
+            logger.info("time cost of {}th end-to-end {} is {} ms\n", ind, this.functiontested, cost);
             latencyres.add((long) cost);
         }
 
@@ -100,7 +100,7 @@ public class sslclient extends Thread{
         double averagelatency = computeAverage(finaldata, true);
 
 
-        System.out.println("end-to-end test done. average latency is "+averagelatency + " us");
+        System.out.println("end-to-end test done. average latency is "+averagelatency + " ms");
 
     }
 
