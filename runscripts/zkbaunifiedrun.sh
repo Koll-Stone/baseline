@@ -29,7 +29,7 @@ then
     then
         command="runscripts/myrun.sh org.example.zkbaserver $me"
         echo $command
-        bash $command
+        # bash $command
     else
         client=$(($me-$servernum))
         start=$(($(($client*1000))+1001))
