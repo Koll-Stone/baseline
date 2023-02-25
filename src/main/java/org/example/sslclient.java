@@ -79,7 +79,7 @@ public class sslclient extends Thread{
         for (; ind<30; ind++) {
 
             try {
-                Thread.sleep(100);
+                Thread.sleep(300);
             } catch (Exception e) {
                 logger.info("sleep error " + e);
             }
