@@ -56,7 +56,7 @@
   </logger>
   
   
-  <logger name="bftsmart" level="debug">
+  <logger name="bftsmart" level="info">
   	<appender-ref ref="MIN-STDOUT" />
   	<!-- <appender-ref ref="STDOUT" /> -->
   </logger>
