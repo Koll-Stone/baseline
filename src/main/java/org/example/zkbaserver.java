@@ -205,7 +205,7 @@ public class zkbaserver extends DefaultRecoverable {
             }
         }
 
-        if (iterations>60000 && !total100kupdateflag)
+        if (iterations>50000 && !total100kupdateflag)
         {
             total40ktime = System.currentTimeMillis();
             total100kupdateflag = true;
@@ -214,10 +214,10 @@ public class zkbaserver extends DefaultRecoverable {
             txdelenum = 0;
             txusenum = 0;
         }
-        if (iterations>160000 && !total160kupdateflag) {
+        if (iterations>80000 && !total160kupdateflag) {
             total160ktime = System.currentTimeMillis();
             long elapsed = (total160ktime -total40ktime);
-            System.out.println("************************\ntps at stable phase is "+(60000.0*1000.0/elapsed)+ "\n***********************");
+            System.out.println("************************\ntps at stable phase is "+(30000.0*1000.0/elapsed)+ "\n***********************");
             System.out.println("four tx processed: create/destroy/delegate/use = "+txcreatenum+"/"+txdestroynum+"/"+txdelenum+"/"+txusenum);
             System.out.println("four tx tps: create/destroy/delegate/use = "+txcreatenum*1000.0/elapsed+"/"+txdestroynum*1000.0/elapsed+
                     "/"+txdelenum*1000.0/elapsed+"/"+txusenum*1000.0/elapsed);
