@@ -165,7 +165,10 @@ public class sslclient extends Thread{
                 break;
             }
         }
-
+        if (System.nanoTime()<start) {
+            logger.info("error!");
+            System.exit(0);
+        }
 
         long duration = System.nanoTime() - start;
         return ((int) duration/1000);
