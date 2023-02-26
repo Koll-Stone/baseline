@@ -65,7 +65,7 @@ public class sslclient extends Thread{
     }
 
     private void dothework() {
-        functiontested = "transfer";
+        functiontested = "use";
 
         // simulate the test!
         try {
