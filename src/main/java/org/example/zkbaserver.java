@@ -91,8 +91,8 @@ public class zkbaserver extends DefaultRecoverable {
         usezkpcosts = new ArrayList<Integer>();
 
         //initialize delegatezkpcosts and usezkpcosts
-        String delefile = "zkpexperiment/zkpcostdata/delegate_result_20.txt";
-        String usefile = "zkpexperiment/zkpcostdata/use_result_20.txt";
+        String delefile = "zkpexperiment/zkpcostdata/delegate_result_32.txt";
+        String usefile = "zkpexperiment/zkpcostdata/use_result_32.txt";
 
         try {
             String deleres = readFile(delefile, StandardCharsets.UTF_8);
