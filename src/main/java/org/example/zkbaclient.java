@@ -4,19 +4,12 @@ import bftsmart.tom.ServiceProxy;
 import bftsmart.tom.util.Storage;
 import bftsmart.tom.util.TOMUtil;
 
-import java.io.ByteArrayOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.security.Signature;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.locks.ReentrantLock;
-
-import static org.example.baselineParameters.*;
-
-
-
 
 
 public class zkbaclient {
@@ -79,7 +72,7 @@ public class zkbaclient {
 
         List<Long> latencyres = new ArrayList<Long>();
         for (int i=0; i<numThreads; i++) {
-            for (long x: clients[i].getLatencydata().getValues())
+            for (long x: clients[i].getLatencydatatype1().getValues())
                 latencyres.add(x);
         }
         long[] finaldata = new long[latencyres.size()];
@@ -87,9 +80,22 @@ public class zkbaclient {
             finaldata[i] = latencyres.get(i);
         }
         double averagelatency = computeAverage(finaldata, true);
+        System.out.println("All clients done. average latency for sig op is "+averagelatency/1000 + " us");
+
+        latencyres.clear();
+        latencyres = new ArrayList<Long>();
+        for (int i=0; i<numThreads; i++) {
+            for (long x: clients[i].getLatencydatatype1().getValues())
+                latencyres.add(x);
+        }
+        finaldata = new long[latencyres.size()];
+        for(int i=0; i<latencyres.size(); i++) {
+            finaldata[i] = latencyres.get(i);
+        }
+        averagelatency = computeAverage(finaldata, true);
 
 
-        System.out.println("All clients done. average latency is "+averagelatency/1000 + " us");
+        System.out.println("All clients done. average latency for zkp op is "+averagelatency/1000 + " us");
 
         exec.shutdown();
 
@@ -126,7 +132,10 @@ public class zkbaclient {
         ServiceProxy proxy;
         int rampup = 1000;
 
-        Storage latencydata;
+        Storage latencydatatype1;
+        Storage latencydatatype2;
+
+
 
         ReentrantLock cansend = new ReentrantLock();
 
@@ -380,7 +389,8 @@ public class zkbaclient {
 
             }
 
-            latencydata = new Storage(numberOfOps / 2);
+            latencydatatype1 = new Storage(numberOfOps / 2);
+            latencydatatype2 = new Storage(numberOfOps/2);
 
             System.out.println("Executing experiment for " + numberOfOps / 2 + " ops");
 
@@ -406,8 +416,12 @@ public class zkbaclient {
                 if (req%100==0)
                     if (verbose) System.out.println(this.id + " // sent!");
 
-                if (allcommands[req]==operationundertest)
-                    latencydata.store(latency);
+//                if (allcommands[req]==operationundertest)
+//                    latencydatatype1.store(latency);
+                if (allcommands[req]==0 || allcommands[req]==1)
+                    latencydatatype1.store(latency);
+                if (allcommands[req]==2 || allcommands[req]==3)
+                    latencydatatype2.store(latency);
 
                 try {
                     //sleeps interval ms before sending next request
@@ -428,19 +442,23 @@ public class zkbaclient {
             }
 
             if(id == initId) {
-                System.out.println(this.id + " // Average time for " + numberOfOps / 2 + " executions (-10%) = " + latencydata.getAverage(true) / 1000 + " us ");
-                System.out.println(this.id + " // Standard desviation for " + numberOfOps / 2 + " executions (-10%) = " + latencydata.getDP(true) / 1000 + " us ");
-                System.out.println(this.id + " // Average time for " + numberOfOps / 2 + " executions (all samples) = " + latencydata.getAverage(false) / 1000 + " us ");
-                System.out.println(this.id + " // Standard desviation for " + numberOfOps / 2 + " executions (all samples) = " + latencydata.getDP(false) / 1000 + " us ");
-                System.out.println(this.id + " // Maximum time for " + numberOfOps / 2 + " executions (all samples) = " + latencydata.getMax(false) / 1000 + " us ");
+                System.out.println(this.id + " // Average time for " + numberOfOps / 2 + " executions (-10%) = " + latencydatatype1.getAverage(true) / 1000 + " us ");
+                System.out.println(this.id + " // Standard desviation for " + numberOfOps / 2 + " executions (-10%) = " + latencydatatype1.getDP(true) / 1000 + " us ");
+                System.out.println(this.id + " // Average time for " + numberOfOps / 2 + " executions (all samples) = " + latencydatatype1.getAverage(false) / 1000 + " us ");
+                System.out.println(this.id + " // Standard desviation for " + numberOfOps / 2 + " executions (all samples) = " + latencydatatype1.getDP(false) / 1000 + " us ");
+                System.out.println(this.id + " // Maximum time for " + numberOfOps / 2 + " executions (all samples) = " + latencydatatype1.getMax(false) / 1000 + " us ");
             }
             System.out.println("client " + this.id + " is done");
             if (id!=1 && id!=2)
                 proxy.close();
         }
 
-        public Storage getLatencydata() {
-            return latencydata;
+        public Storage getLatencydatatype1() {
+            return latencydatatype1;
+        }
+
+        public Storage getLatencydatatype2() {
+            return latencydatatype2;
         }
     }
 }
