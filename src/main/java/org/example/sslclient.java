@@ -260,7 +260,7 @@ public class sslclient extends Thread{
         context.init(kf.getKeyManagers(), null, null);
 
         SocketFactory factory = context.getSocketFactory();
-        Socket s = factory.createSocket("localhost", 8443);
+        Socket s = factory.createSocket("54.180.155.149", 8443);
         s.setKeepAlive(true);
         s.setTcpNoDelay(true);
 
