@@ -85,7 +85,7 @@ public class zkbaclient {
         latencyres.clear();
         latencyres = new ArrayList<Long>();
         for (int i=0; i<numThreads; i++) {
-            for (long x: clients[i].getLatencydatatype1().getValues())
+            for (long x: clients[i].getLatencydatatype2().getValues())
                 latencyres.add(x);
         }
         finaldata = new long[latencyres.size()];
@@ -315,8 +315,8 @@ public class zkbaclient {
 
         public void run() {
             int operationundertest = 2;
-            int sigratio = 30; // 25%
-            int zkpratio = 20; //25% make sure sigratio+zkpratio==50
+            int sigratio = 20; // 25%
+            int zkpratio = 30; //25% make sure sigratio+zkpratio==50
             List<Integer> commandwillbeused = new ArrayList<Integer>();
             for (int i=0; i<sigratio; i++)
                 commandwillbeused.add(0);
