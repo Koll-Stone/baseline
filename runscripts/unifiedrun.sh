@@ -27,7 +27,7 @@ if [ $flag -eq 1 ]
 then
     if [ $me -le $(($servernum-1)) ]
     then
-        command="runscripts/myrun.sh org.example.baselineServer $me 10000 true true"
+        command="runscripts/myrun.sh org.example.baselineServer $me 40000 true true"
         echo $command
         bash $command
     else
