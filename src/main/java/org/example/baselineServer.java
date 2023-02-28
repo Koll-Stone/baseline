@@ -198,9 +198,7 @@ public final class baselineServer extends DefaultRecoverable {
             buffer.get(signatures[i]);
         }
 
-        for(int i = 0; i < commands.length; ++i) {
-            this.recordInfo(queries[i], msgCtxs[i]);
-        }
+        
 
 
         // multi-thread evaluation
@@ -248,7 +246,9 @@ public final class baselineServer extends DefaultRecoverable {
             logger.info("error in waiting multi-thread evaluation\n"+e);
         }
 
-
+        for(int i = 0; i < commands.length; ++i) {
+            this.recordInfo(queries[i], msgCtxs[i]);
+        }
 
 
         if (this.randomAccessFile != null) {
@@ -315,15 +315,15 @@ public final class baselineServer extends DefaultRecoverable {
             msgCtx.getFirstInBatch().executedTime = System.nanoTime();
             this.totalLatency.store(msgCtx.getFirstInBatch().executedTime - msgCtx.getFirstInBatch().receptionTime);
 
-            if (msgCtx.getConsensusId()==16000) {
+            if (msgCtx.getConsensusId()==12000) {
                 System.out.println("*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*- consensus instance "+ msgCtx.getConsensusId());
-                System.out.println("consensus latency:" + ( msgCtx.getFirstInBatch().decisionTime - msgCtx.getFirstInBatch().consensusStartTime)/1000 + " us");
+                System.out.println("consensus latency: " + ( msgCtx.getFirstInBatch().decisionTime - msgCtx.getFirstInBatch().consensusStartTime)/1000 + " us");
                 long temp = msgCtx.getFirstInBatch().consensusStartTime - msgCtx.getFirstInBatch().receptionTime;
-                System.out.println("preconsensus latency" +( temp > 0L ? temp : 0L)/1000 + " us");
-                System.out.println("pos consensus latency" + (msgCtx.getFirstInBatch().executedTime - msgCtx.getFirstInBatch().decisionTime)/1000 + " us");
-                System.out.println("propose latency" + (msgCtx.getFirstInBatch().writeSentTime - msgCtx.getFirstInBatch().consensusStartTime)/1000 + " us");
-                System.out.println("write latency" + (msgCtx.getFirstInBatch().acceptSentTime - msgCtx.getFirstInBatch().writeSentTime)/1000 + " us");
-                System.out.println("accept latency" + (msgCtx.getFirstInBatch().decisionTime - msgCtx.getFirstInBatch().acceptSentTime)/1000 + " us");
+                System.out.println("preconsensus latency: " +( temp > 0L ? temp : 0L)/1000 + " us");
+                System.out.println("pos consensus latency: " + (msgCtx.getFirstInBatch().executedTime - msgCtx.getFirstInBatch().decisionTime)/1000 + " us");
+                System.out.println("propose latency: " + (msgCtx.getFirstInBatch().writeSentTime - msgCtx.getFirstInBatch().consensusStartTime)/1000 + " us");
+                System.out.println("write latency: " + (msgCtx.getFirstInBatch().acceptSentTime - msgCtx.getFirstInBatch().writeSentTime)/1000 + " us");
+                System.out.println("accept latency: " + (msgCtx.getFirstInBatch().decisionTime - msgCtx.getFirstInBatch().acceptSentTime)/1000 + " us");
                 System.out.println("*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-");
             }
 
