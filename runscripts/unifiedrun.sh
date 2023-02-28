@@ -29,7 +29,7 @@ then
     then
         command="runscripts/myrun.sh org.example.baselineServer $me 10000 true false"
         echo $command
-        # bash $command
+        bash $command
     else
         client=$(($me-$servernum))
         start=$(($(($client*1000))+1001))
