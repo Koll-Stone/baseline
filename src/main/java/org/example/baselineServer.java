@@ -246,6 +246,10 @@ public final class baselineServer extends DefaultRecoverable {
             logger.info("error in waiting multi-thread evaluation\n"+e);
         }
 
+        if (msgCtxs[0].getConsensusId()==8000) {
+            System.out.println("consensus 8000, batch size = "+commands.length);
+        }
+
         for(int i = 0; i < commands.length; ++i) {
             this.recordInfo(queries[i], msgCtxs[i]);
         }
@@ -315,7 +319,7 @@ public final class baselineServer extends DefaultRecoverable {
             msgCtx.getFirstInBatch().executedTime = System.nanoTime();
             this.totalLatency.store(msgCtx.getFirstInBatch().executedTime - msgCtx.getFirstInBatch().receptionTime);
 
-            if (msgCtx.getConsensusId()==12000) {
+            if (msgCtx.getConsensusId()==8000) {
                 System.out.println("*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*- consensus instance "+ msgCtx.getConsensusId());
                 System.out.println("consensus latency: " + ( msgCtx.getFirstInBatch().decisionTime - msgCtx.getFirstInBatch().consensusStartTime)/1000 + " us");
                 long temp = msgCtx.getFirstInBatch().consensusStartTime - msgCtx.getFirstInBatch().receptionTime;
