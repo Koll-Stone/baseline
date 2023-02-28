@@ -314,6 +314,19 @@ public final class baselineServer extends DefaultRecoverable {
             readOnly = msgCtx.readOnly;
             msgCtx.getFirstInBatch().executedTime = System.nanoTime();
             this.totalLatency.store(msgCtx.getFirstInBatch().executedTime - msgCtx.getFirstInBatch().receptionTime);
+
+            if (msgCtx.getConsensusId()==16000) {
+                System.out.println("*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-");
+                System.out.println("consensus latency:" + ( msgCtx.getFirstInBatch().decisionTime - msgCtx.getFirstInBatch().consensusStartTime));
+                long temp = msgCtx.getFirstInBatch().consensusStartTime - msgCtx.getFirstInBatch().receptionTime;
+                System.out.println("preconsensus latency" +( temp > 0L ? temp : 0L));
+                System.out.println("pos consensus latency" + (msgCtx.getFirstInBatch().executedTime - msgCtx.getFirstInBatch().decisionTime));
+                System.out.println("propose latency" + (msgCtx.getFirstInBatch().writeSentTime - msgCtx.getFirstInBatch().consensusStartTime));
+                System.out.println("write latency" + (msgCtx.getFirstInBatch().acceptSentTime - msgCtx.getFirstInBatch().writeSentTime));
+                System.out.println("accept latency" + (msgCtx.getFirstInBatch().decisionTime - msgCtx.getFirstInBatch().acceptSentTime));
+                System.out.println("*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-");
+            }
+
             if (!readOnly) {
                 this.consensusLatency.store(msgCtx.getFirstInBatch().decisionTime - msgCtx.getFirstInBatch().consensusStartTime);
                 long temp = msgCtx.getFirstInBatch().consensusStartTime - msgCtx.getFirstInBatch().receptionTime;
