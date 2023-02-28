@@ -208,8 +208,8 @@ public final class baselineServer extends DefaultRecoverable {
             parallelVerifier.submit(() -> {
                 try {
                     int tind = (int) Thread.currentThread().getId() % nWorkers;
-                    String result = pdpList[tind].evaluate(new String(queries[cind]));
-                    // String result = "this is result";
+                    // String result = pdpList[tind].evaluate(new String(queries[cind]));
+                    String result = "this is result";
                     replies[cind] = result.getBytes();
 //                    logger.info("thread {} finishes its work", tind);
 
